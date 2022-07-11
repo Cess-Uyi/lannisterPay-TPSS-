@@ -7,10 +7,18 @@
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cess-Uyi/lannisterPay-TPSS-"
+  },
   "author": "Success Omonuyi Ebhoaye",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.1"
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "express-validator": "^6.14.2",
+    "mongoose": "^6.4.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"
