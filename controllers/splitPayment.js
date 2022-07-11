@@ -65,10 +65,16 @@ class splitPayment {
         ratioSplitTypes
       );
 
+      console.log("BALANCE:", balance);
+
       // loop through splitTypesArray and compute according to splitType
       for (let i = 0; i < splitTypesArray.length; i++) {
         const currentSplitInfo = splitTypesArray[i];
-
+        if (balance < 0) {
+          return res.status(500).json({
+            error: "Incomputable SplitValue",
+          });
+        } else
         if (currentSplitInfo.SplitType === "FLAT") {
           balance = balCalc(balance, currentSplitInfo.SplitValue);
           console.log(balance);
@@ -78,7 +84,6 @@ class splitPayment {
             Amount: currentSplitInfo.SplitValue,
           };
           finalSplitBreakDown.push(data);
-          // finalSplitBreakDown[currentSplitInfo.index] = data;
         } else if (currentSplitInfo.SplitType === "PERCENTAGE") {
           let result = percentage(balance, currentSplitInfo.SplitValue);
           const data = {
@@ -86,7 +91,6 @@ class splitPayment {
             Amount: result,
           };
           finalSplitBreakDown.push(data);
-          // finalSplitBreakDown[currentSplitInfo.index] = data;
           balance = balCalc(balance, result);
           console.log(balance);
         } else if (currentSplitInfo.SplitType === "RATIO") {
@@ -98,9 +102,8 @@ class splitPayment {
             Amount: result,
           };
           finalSplitBreakDown.push(data);
-          // finalSplitBreakDown[currentSplitInfo.index] = data;
-          balance = balCalc(balance, ratioBalance);
-          console.log(balance);
+          // balance = balCalc(balance, ratioBalance);
+          // console.log(balance);
         }
       }
 
