@@ -3,6 +3,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const dotenv = require("dotenv").config();
 
 const app = express();
 
@@ -27,22 +28,18 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something broke!");
 });
 
-//Connect to MongoDB
-mongoose.connect(
-  // process.env.CONNECTION_STRING,
-  `mongodb+srv://cess-uyi:succy!!!@cluster0.wdzyl.mongodb.net/?retryWrites=true&w=majority`,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
+// Connect to MongoDB
+// mongoose.connect(process.env.CONNECTION_STRING, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
 
-//check if DB connection is successful
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error: "));
-db.once("open", function () {
-  console.log("Database connected successfully");
-});
+// check if DB connection is successful
+// const db = mongoose.connection;
+// db.on("error", console.error.bind(console, "connection error: "));
+// db.once("open", function () {
+//   console.log("Database connected successfully");
+// });
 
 const PORT = process.env.PORT || 3000;
 

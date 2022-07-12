@@ -43,5 +43,3 @@ const SplitPaymentSchema = new Schema(
 const SplitPayment = mongoose.model("SplitPayment", SplitPaymentSchema);
 
 module.exports = SplitPayment
-
-// validate: [arrayLimit, "{PATH} exceeds the limit of 10"];

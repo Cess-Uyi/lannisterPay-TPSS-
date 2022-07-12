@@ -3,6 +3,7 @@ const { validationResult } = require("express-validator");
 const { LocalStorage } = require("node-localstorage");
 
 class splitPayment {
+  // constructor(ID, Amount, Currency, CustomerEmail, )
   static async splitPaymentCompute(req, res, next) {
     // check for validation erros
     const errors = validationResult(req);
@@ -74,6 +75,7 @@ class splitPayment {
       // loop through splitTypesArray and compute according to splitType
       for (let i = 0; i < splitTypesArray.length; i++) {
         const currentSplitInfo = splitTypesArray[i];
+        // check to make sure balance or splitValue is not less than 0
         if (balance < 0 || currentSplitInfo.SplitValue < 0) {
           return res.status(500).json({
             error: "Incomputable SplitValue",
@@ -116,10 +118,10 @@ class splitPayment {
       };
 
       // localStorage
-      payments.push(response);
-      localStorage.setItem("payments", JSON.stringify(payments));
-      let computedPayments = JSON.parse(localStorage.getItem("payments"));
-      console.log(computedPayments);
+      // payments.push(response);
+      // localStorage.setItem("payments", JSON.stringify(payments));
+      // let computedPayments = JSON.parse(localStorage.getItem("payments"));
+      // console.log(computedPayments);
       // localStorage.clear();
 
       return res.status(200).json(response);
