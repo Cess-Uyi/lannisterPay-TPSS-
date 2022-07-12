@@ -1,5 +1,6 @@
 const SplitPayment = require("../models/splitPayment");
 const { validationResult } = require("express-validator");
+const { LocalStorage } = require("node-localstorage");
 
 class splitPayment {
   static async splitPaymentCompute(req, res, next) {
@@ -11,6 +12,10 @@ class splitPayment {
         error: errors.mapped(),
       });
     }
+
+    let localStorage = new LocalStorage("./scratch");
+    let payments = [];
+
     try {
       const { ID, Amount, Currency, CustomerEmail, SplitInfo } = req.body;
 
@@ -25,6 +30,7 @@ class splitPayment {
       //set starting balance to the Amount in request body
       let balance = Amount;
       let totalRatio = 0;
+      let ratioBalance = 0;
 
       // functions based on SplitType
       let balCalc = (amount, value) => {
@@ -65,19 +71,15 @@ class splitPayment {
         ratioSplitTypes
       );
 
-      console.log("BALANCE:", balance);
-
       // loop through splitTypesArray and compute according to splitType
       for (let i = 0; i < splitTypesArray.length; i++) {
         const currentSplitInfo = splitTypesArray[i];
-        if (balance < 0) {
+        if (balance < 0 || currentSplitInfo.SplitValue < 0) {
           return res.status(500).json({
             error: "Incomputable SplitValue",
           });
-        } else
-        if (currentSplitInfo.SplitType === "FLAT") {
+        } else if (currentSplitInfo.SplitType === "FLAT") {
           balance = balCalc(balance, currentSplitInfo.SplitValue);
-          console.log(balance);
           flat(balance, currentSplitInfo.SplitValue);
           const data = {
             SplitEntityId: currentSplitInfo.SplitEntityId,
@@ -92,26 +94,33 @@ class splitPayment {
           };
           finalSplitBreakDown.push(data);
           balance = balCalc(balance, result);
-          console.log(balance);
+          ratioBalance = balance;
         } else if (currentSplitInfo.SplitType === "RATIO") {
-          const ratioBalance = balance;
+          // const ratioBalance = balance;
+          const startingRatioBalance = ratioBalance;
           const result =
-            (Number(currentSplitInfo.SplitValue) / totalRatio) * ratioBalance;
+            (Number(currentSplitInfo.SplitValue) / totalRatio) *
+            startingRatioBalance;
           const data = {
             SplitEntityId: currentSplitInfo.SplitEntityId,
             Amount: result,
           };
           finalSplitBreakDown.push(data);
-          // balance = balCalc(balance, ratioBalance);
-          // console.log(balance);
+          balance = balCalc(balance, result);
         }
       }
-
       const response = {
         ID,
         Balance: balance,
         SplitBreakdown: finalSplitBreakDown,
       };
+
+      // localStorage
+      payments.push(response);
+      localStorage.setItem("payments", JSON.stringify(payments));
+      let computedPayments = JSON.parse(localStorage.getItem("payments"));
+      console.log(computedPayments);
+      // localStorage.clear();
 
       return res.status(200).json(response);
     } catch (err) {
